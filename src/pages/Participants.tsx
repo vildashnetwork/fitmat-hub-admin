@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,16 +19,25 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockParticipants } from "@/utils/mockData";
 import { Participant } from "@/types";
 import { ParticipantDialog } from "@/components/ParticipantDialog";
+import { getParticipants, deleteParticipant as deleteParticipantStorage } from "@/utils/storage";
+import { toast } from "sonner";
 
 export default function Participants() {
-  const [participants, setParticipants] = useState<Participant[]>(mockParticipants);
+  const [participants, setParticipants] = useState<Participant[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingParticipant, setEditingParticipant] = useState<Participant | undefined>();
+
+  useEffect(() => {
+    loadParticipants();
+  }, []);
+
+  const loadParticipants = () => {
+    setParticipants(getParticipants());
+  };
 
   const filteredParticipants = participants.filter(
     (participant) =>
@@ -38,7 +47,9 @@ export default function Participants() {
   );
 
   const handleDelete = (id: string) => {
-    setParticipants(participants.filter((p) => p.id !== id));
+    deleteParticipantStorage(id);
+    loadParticipants();
+    toast.success("Participant deleted successfully");
   };
 
   const handleEdit = (participant: Participant) => {
@@ -47,11 +58,7 @@ export default function Participants() {
   };
 
   const handleSave = (participant: Participant) => {
-    if (editingParticipant) {
-      setParticipants(participants.map((p) => (p.id === participant.id ? participant : p)));
-    } else {
-      setParticipants([...participants, { ...participant, id: Date.now().toString() }]);
-    }
+    loadParticipants();
     setDialogOpen(false);
     setEditingParticipant(undefined);
   };

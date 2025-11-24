@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { addParticipant, updateParticipant } from "@/utils/storage";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -53,6 +55,15 @@ export function ParticipantDialog({ open, onOpenChange, participant, onSave }: P
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (participant) {
+      updateParticipant(formData.id, formData);
+      toast.success("Participant updated successfully");
+    } else {
+      addParticipant({ ...formData, id: Date.now().toString(), joinedDate: new Date().toISOString() });
+      toast.success("Participant added successfully");
+    }
+    
     onSave(formData);
     onOpenChange(false);
   };

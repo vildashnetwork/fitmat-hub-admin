@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { addEvent, updateEvent } from "@/utils/storage";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -54,6 +56,15 @@ export function EventDialog({ open, onOpenChange, event, onSave }: EventDialogPr
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (event) {
+      updateEvent(formData.id, formData);
+      toast.success("Event updated successfully");
+    } else {
+      addEvent({ ...formData, id: Date.now().toString() });
+      toast.success("Event added successfully");
+    }
+    
     onSave(formData);
     onOpenChange(false);
   };
