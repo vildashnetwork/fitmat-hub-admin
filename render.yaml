@@ -1,0 +1,10 @@
+services:
+  - type: static
+    name: fitmat-frontend
+    env: node
+    region: oregon
+    repo: https://github.com/vildashnetwork/fitmat-campus-hub
+    branch: main
+    root: "" # Root directory is project root
+    buildCommand: "npm ci && npm run build"
+    publishPath: "dist" # folder containing index.html
