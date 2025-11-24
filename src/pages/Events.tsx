@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Plus, Search, Edit, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Search, Edit, Trash2, ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,16 +19,34 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockEvents } from "@/utils/mockData";
 import { Event } from "@/types";
 import { EventDialog } from "@/components/EventDialog";
+import { getEvents, deleteEvent as deleteEventStorage, addVote, getVotes } from "@/utils/storage";
+import { toast } from "sonner";
 
 export default function Events() {
-  const [events, setEvents] = useState<Event[]>(mockEvents);
+  const [events, setEvents] = useState<Event[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | undefined>();
+  const [votes, setVotes] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  const loadEvents = () => {
+    const storedEvents = getEvents();
+    setEvents(storedEvents);
+    
+    // Load votes for all events
+    const votesMap: Record<string, number> = {};
+    storedEvents.forEach((event) => {
+      votesMap[event.id] = getVotes(event.id);
+    });
+    setVotes(votesMap);
+  };
 
   const filteredEvents = events.filter(
     (event) =>
@@ -38,7 +56,9 @@ export default function Events() {
   );
 
   const handleDelete = (id: string) => {
-    setEvents(events.filter((e) => e.id !== id));
+    deleteEventStorage(id);
+    loadEvents();
+    toast.success("Event deleted successfully");
   };
 
   const handleEdit = (event: Event) => {
@@ -47,13 +67,15 @@ export default function Events() {
   };
 
   const handleSave = (event: Event) => {
-    if (editingEvent) {
-      setEvents(events.map((e) => (e.id === event.id ? event : e)));
-    } else {
-      setEvents([...events, { ...event, id: Date.now().toString() }]);
-    }
+    loadEvents();
     setDialogOpen(false);
     setEditingEvent(undefined);
+  };
+
+  const handleVote = (eventId: string) => {
+    addVote(eventId);
+    setVotes({ ...votes, [eventId]: (votes[eventId] || 0) + 1 });
+    toast.success("Vote added!");
   };
 
   const getStatusColor = (status: string) => {
@@ -121,6 +143,7 @@ export default function Events() {
                   <TableHead>Date</TableHead>
                   <TableHead>Participants</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Votes</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -134,6 +157,19 @@ export default function Events() {
                       <Badge className={getStatusColor(event.status)} variant="outline">
                         {event.status}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleVote(event.id)}
+                          className="gap-1"
+                        >
+                          <ThumbsUp className="h-4 w-4" />
+                          {votes[event.id] || 0}
+                        </Button>
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

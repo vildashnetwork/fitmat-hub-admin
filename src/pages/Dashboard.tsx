@@ -2,12 +2,39 @@ import { Calendar, Users, TrendingUp, Activity } from "lucide-react";
 import { StatsCard } from "@/components/StatsCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { chartData, mockEvents } from "@/utils/mockData";
+import { getEvents, getParticipants } from "@/utils/storage";
+import { useState, useEffect } from "react";
+
+const chartData = {
+  eventsOverTime: [
+    { month: "Jan", events: 4 },
+    { month: "Feb", events: 6 },
+    { month: "Mar", events: 5 },
+    { month: "Apr", events: 8 },
+    { month: "May", events: 7 },
+    { month: "Jun", events: 9 },
+  ],
+  participantsPerEvent: [
+    { event: "Basketball", participants: 24 },
+    { event: "Football", participants: 32 },
+    { event: "Tennis", participants: 16 },
+    { event: "Swimming", participants: 18 },
+    { event: "Volleyball", participants: 12 },
+  ],
+};
 
 export default function Dashboard() {
-  const totalEvents = mockEvents.length;
-  const totalParticipants = mockEvents.reduce((sum, event) => sum + event.participants, 0);
-  const upcomingMatches = mockEvents.filter(e => e.status === "upcoming").length;
+  const [events, setEvents] = useState(getEvents());
+  const [participants, setParticipants] = useState(getParticipants());
+
+  useEffect(() => {
+    setEvents(getEvents());
+    setParticipants(getParticipants());
+  }, []);
+
+  const totalEvents = events.length;
+  const totalParticipants = participants.length;
+  const upcomingMatches = events.filter((e) => e.status === "upcoming").length;
 
   return (
     <div className="space-y-6 p-6">

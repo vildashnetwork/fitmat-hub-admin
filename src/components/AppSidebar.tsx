@@ -1,6 +1,7 @@
-import { LayoutDashboard, Calendar, Users, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Settings, LogOut, Shield } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 import {
   Sidebar,
@@ -18,16 +19,24 @@ const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Events", url: "/events", icon: Calendar },
   { title: "Participants", url: "/participants", icon: Users },
+  { title: "Admins", url: "/admins", icon: Shield },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const currentPath = location.pathname;
 
   const isActive = (path: string) => currentPath === path;
   const isExpanded = items.some((i) => isActive(i.url));
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <Sidebar className={state === "collapsed" ? "w-14" : "w-60"} collapsible="icon">
@@ -58,7 +67,10 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem>
-                <SidebarMenuButton className="hover:bg-sidebar-accent transition-colors text-destructive">
+                <SidebarMenuButton 
+                  onClick={handleLogout}
+                  className="hover:bg-sidebar-accent transition-colors text-destructive cursor-pointer"
+                >
                   <LogOut className="h-5 w-5" />
                   {state !== "collapsed" && <span>Logout</span>}
                 </SidebarMenuButton>
