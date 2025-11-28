@@ -1,0 +1,351 @@
+/* Requests.css */
+
+/* Root layout */
+#requests-root {
+    padding: 0.75rem;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: #1f2937;
+
+    width: 100%;
+}
+
+/* Toasts */
+#toasts {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+#toasts>div {
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    max-width: 18rem;
+    word-wrap: break-word;
+    font-size: 0.9rem;
+}
+
+#toasts>div[data-type="error"] {
+    background: #fee2e2;
+    /* red-100 */
+    color: #991b1b;
+    /* red-800 */
+}
+
+#toasts>div[data-type="info"] {
+    background: #000000;
+    /* green-100 */
+    color: #065f46;
+    /* green-800 */
+}
+
+/* Header */
+#header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+#title {
+    font-size: 1.125rem;
+    color: #fee2e2;
+    font-weight: 600;
+}
+
+#refresh-btn {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgba(209, 188, 188, 0.753);
+    background: transparent;
+    color: #ecfdf5;
+    cursor: pointer;
+}
+
+#refresh-btn:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+/* Loading / Empty */
+#loading,
+#empty {
+    text-align: center;
+    padding: 3rem 0;
+    color: #6b7280;
+    /* gray-500 */
+    font-size: 1rem;
+}
+
+/* Grid */
+#requests-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+}
+
+
+
+/* @media (min-width: 1024px) {
+    #requests-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+} */
+
+/* Each request card (matches id^="request-") */
+div[id^="request-"],
+article[id^="request-"] {
+    background: rgb(2, 2, 2);
+    border-radius: 1rem;
+    box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+    padding: 1rem;
+
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+/* .number {
+    width: 1000px !important;
+} */
+
+@media (min-width: 500px) {
+
+    /* #requests-grid {
+        grid-template-columns: repeat(2, 1fr);
+    } */
+    .number {
+        width: auto !important;
+    }
+
+    div[id^="request-"],
+    article[id^="request-"] {
+        width: auto !important;
+    }
+}
+
+
+/* background image container */
+div[id^="bg-"] {
+    height: 9rem;
+    width: 100%;
+    background: #f3f4f6;
+    height: 300px !important;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+div[id^="bg-"] img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* row: avatar + info */
+div[class="row"],
+/* fallback if class present */
+div[id^="row-"] {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+/* avatar / photo */
+div[id^="photo-"] {
+    width: 5rem;
+    /* 80px */
+    height: 5rem;
+    border-radius: 9999px;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(17, 24, 39, 0.06);
+    border: 4px solid #fff;
+    flex-shrink: 0;
+    background: #e5e7eb;
+}
+
+div[id^="photo-"] img,
+div[id^="avatar-placeholder-"] {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background: #e5e7eb;
+}
+
+/* info */
+div[class="info"],
+div[id^="info-"] {
+    flex: 1;
+}
+
+div[id^="info-"] h3 {
+    font-size: 1.0625rem;
+    /* lg */
+    font-weight: 600;
+    margin: 0;
+}
+
+.muted {
+    color: #9ca3af;
+    font-size: 0.75rem;
+}
+
+.manifesto {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: #e4dfdf;
+    /* gray-700 */
+}
+
+/* meta area (status, created, button) */
+div[class="meta"],
+div[id^="meta-"] {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* left side inside meta */
+div[class="left"] {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* status badge uses data-approved attr */
+span[id^="status-"] {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+span[id^="status-"][data-approved="true"] {
+    background: #ecfdf5;
+    /* green-100 */
+    color: #065f46;
+    /* green-800 */
+}
+
+span[id^="status-"][data-approved="false"] {
+    background: #fffbeb;
+    /* yellow-100 */
+    color: #854d0e;
+    /* yellow-800-ish */
+}
+
+/* created time small */
+div.small {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+/* approve button */
+div.right button[id^="approve-"] {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    background: #2d6a4f;
+    /* approximated "wood" dark green */
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+div.right button[id^="approve-"]:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+/* Team section */
+div.team {
+    margin-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.03);
+    padding-top: 0.75rem;
+    display: flex;
+    flex-direction: row;
+}
+
+div.team h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+}
+
+/* team member */
+div.team-member {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    align-items: start;
+    margin-bottom: 0.5rem;
+}
+
+div.team-member .tm-photo {
+    width: 100% !important;
+    height: 15rem;
+    border-radius: 0.375rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #f3f4f6;
+    flex-shrink: 0;
+}
+
+div.team-member .tm-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tm-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #9ca3af;
+}
+
+/* small responsive tweaks */
+@media (max-width: 640px) {
+    #requests-root {
+        padding: 0.5rem;
+    }
+
+    #title {
+        font-size: 1rem;
+    }
+
+    div[id^="photo-"] {
+        width: 4.5rem;
+        height: 4.5rem;
+    }
+}
+
+
+.slide {
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    width: 100% !important;
+    justify-content: center;
+    align-items: center;
+    gap: 12px !important;
+}
+
+.mobile-btn {
+    color: #e4dfdf;
+    font-weight: 900;
+    margin: 10px;
+}
+
+.left-slide {
+    padding: 12px;
+    background: #9ca3af;
+    color: #065f46;
+    font-weight: 900;
+}

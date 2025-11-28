@@ -21,6 +21,8 @@ const items = [
   { title: "Participants", url: "/participants", icon: Users },
   { title: "Admins", url: "/admins", icon: Shield },
   { title: "Settings", url: "/settings", icon: Settings },
+  { title: "Requests", url: "/requests", icon: Calendar },
+  { title: "Approved", url: "/approved", icon: Shield },
 ];
 
 export function AppSidebar() {
@@ -46,7 +48,7 @@ export function AppSidebar() {
             Fitmat Campus
           </h2>
         </div>
-        
+
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -67,7 +69,7 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem>
-                <SidebarMenuButton 
+                <SidebarMenuButton
                   onClick={handleLogout}
                   className="hover:bg-sidebar-accent transition-colors text-destructive cursor-pointer"
                 >

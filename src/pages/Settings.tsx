@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,14 +6,88 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import axios from "axios"
 
 export default function Settings() {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(false);
   const [weeklyReports, setWeeklyReports] = useState(true);
+  const [email, setemail] = useState<string>("")
+  const [name, setname] = useState<string>("")
 
-  const handleSaveProfile = () => {
-    toast.success("Profile updated successfully!");
+  type AdminUser = {
+    _id?: string;
+    email?: string;
+    name?: string;
+    [key: string]: unknown;
+  };
+
+  const [user, setuser] = useState<AdminUser | null>(null)
+  const [password, setpassword] = useState<string>("")
+
+
+  useEffect(() => {
+    const token = localStorage.getItem("authtoken");
+
+    const decode = async () => {
+      if (!token) return;
+
+      try {
+        const response = await axios.get(
+          "https://faap.onrender.com/api/admin/decode/token/admin",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (response.status === 200) {
+          const userData = response.data?.data ?? response.data;
+          const normalized = userData as AdminUser;
+          setuser(normalized);
+          setemail(normalized?.email ?? "");
+          setname(normalized?.name ?? "");
+        }
+      } catch (error: unknown) {
+        console.error(error);
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error(String(error));
+        }
+        console.error(error);
+        toast.error(error?.message ?? String(error));
+      }
+    };
+
+    decode();
+  }, [])
+
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const handleSaveProfile = async () => {
+    try {
+      setLoading(true)
+      //https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(username)}
+
+      const update = await axios.put(`https://faap.onrender.com/api/admin/update/${user.id}`,
+        {
+          username: name,
+          email: email,
+          password: password,
+          profile: "https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}"
+        }
+      )
+      if (update.status === 200) {
+        toast.success(update.data.message)
+      } else {
+        toast.success(update.data.message)
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error)
+    } finally {
+      setLoading(false)
+    }
+
+
+
   };
 
   const handleSaveNotifications = () => {
@@ -36,17 +110,23 @@ export default function Settings() {
           <CardContent className="space-y-4">
             <div className="grid gap-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" defaultValue="Admin User" />
+              <Input id="name" defaultValue={name} onChange={(e) => setname(e.target.value)} />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" defaultValue="admin@fitmat.com" />
+              <Input id="email" type="email" defaultValue={email} onChange={(e) => setemail(e.target.value)} />
             </div>
+            <div className="grid gap-2">
+              <Label htmlFor="email">Password</Label>
+              <Input id="email" type="password" defaultValue={password} onChange={(e) => setpassword(e.target.value)} />
+            </div>
+
+
             <div className="grid gap-2">
               <Label htmlFor="role">Role</Label>
               <Input id="role" defaultValue="Administrator" disabled />
             </div>
-            <Button onClick={handleSaveProfile}>Save Changes</Button>
+            <Button onClick={handleSaveProfile}>{loading ? "loading.." : "Save Changes"}</Button>
           </CardContent>
         </Card>
 

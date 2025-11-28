@@ -15,15 +15,23 @@ import Events from "./pages/Events";
 import Participants from "./pages/Participants";
 import Admins from "./pages/Admins";
 import Settings from "./pages/Settings";
+
+import Requests from "./pages/Requests";
+import Approve from "./pages/Approve";
+import ElectionsPage from "./pages/ElectionsPage"
+
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
 import { initializeStorage } from "@/utils/storage";
-
+import axios from "axios"
 const queryClient = new QueryClient();
+
 
 const App = () => {
   useEffect(() => {
+
     initializeStorage();
+
   }, []);
 
   return (
@@ -49,6 +57,10 @@ const App = () => {
                               <Routes>
                                 <Route path="/" element={<Dashboard />} />
                                 <Route path="/events" element={<Events />} />
+                                <Route path="/requests" element={<Requests />} />
+                                <Route path="/approved" element={<Approve />} />
+                                  <Route path="/elections" element={<ElectionsPage />} />
+
                                 <Route path="/participants" element={<Participants />} />
                                 <Route path="/admins" element={<Admins />} />
                                 <Route path="/settings" element={<Settings />} />
@@ -71,3 +83,10 @@ const App = () => {
 };
 
 export default App;
+
+
+
+
+
+
+

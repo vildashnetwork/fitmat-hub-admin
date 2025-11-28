@@ -22,85 +22,85 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import axios from "axios";
 
 interface Admin {
   id: string;
   email: string;
-  name: string;
+  username: string;
   createdAt: string;
 }
 
 export default function Admins() {
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [newAdmin, setNewAdmin] = useState({ name: "", email: "", password: "" });
+  const [newAdmin, setNewAdmin] = useState({ username: "", email: "", password: "" });
   const { admin: currentAdmin } = useAuth();
 
   useEffect(() => {
     loadAdmins();
   }, []);
-
-  const loadAdmins = () => {
-    const storedAdmins = localStorage.getItem("admins");
-    if (storedAdmins) {
-      setAdmins(JSON.parse(storedAdmins));
+  const [loadingadmins, setloadadmins] = useState<boolean>(false)
+  const loadAdmins = async () => {
+    try {
+      setloadadmins(true)
+      const res = await axios.get("https://faap.onrender.com/api/admin/allowners")
+      if (res.status === 200) {
+        setAdmins(res.data.owners);
+      }
+    } catch (error: any) {
+      toast.error(error?.message || String(error));
+    } finally {
+      setloadadmins(false)
     }
   };
-
-  const handleAddAdmin = (e: React.FormEvent) => {
+  const [loading, setloading] = useState<boolean>(false);
+  const handleAddAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const admins = JSON.parse(localStorage.getItem("admins") || "[]");
-    const passwords = JSON.parse(localStorage.getItem("adminPasswords") || "{}");
-    
-    // Check if email already exists
-    if (admins.find((a: Admin) => a.email === newAdmin.email)) {
-      toast.error("Admin with this email already exists");
-      return;
+
+
+    try {
+      setloading(true)
+      const res = await axios.post("https://faap.onrender.com/api/admin/register",
+        {
+          username: newAdmin.username,
+          email: newAdmin.email,
+          password: newAdmin.password
+        }
+      );
+      if (res.status === 201) {
+        toast.success(res.data?.message || res.data || "Admin added");
+        setDialogOpen(false);
+        setNewAdmin({ username: "", email: "", password: "" });
+        loadAdmins();
+      } else {
+        toast.error(res.data?.message || "Failed to add admin");
+      }
+    } catch (error: any) {
+      console.log('====================================');
+      console.log(error);
+      console.log('====================================');
+      toast.error(error?.message || String(error));
+    } finally {
+      setloading(false)
     }
-    
-    const admin: Admin = {
-      id: Date.now().toString(),
-      email: newAdmin.email,
-      name: newAdmin.name,
-      createdAt: new Date().toISOString(),
-    };
-    
-    admins.push(admin);
-    passwords[newAdmin.email] = newAdmin.password;
-    
-    localStorage.setItem("admins", JSON.stringify(admins));
-    localStorage.setItem("adminPasswords", JSON.stringify(passwords));
-    
-    loadAdmins();
-    setDialogOpen(false);
-    setNewAdmin({ name: "", email: "", password: "" });
-    toast.success("Admin added successfully");
+
+
   };
 
-  const handleDelete = (id: string) => {
-    const admins = JSON.parse(localStorage.getItem("admins") || "[]");
-    const adminToDelete = admins.find((a: Admin) => a.id === id);
-    
-    if (admins.length === 1) {
-      toast.error("Cannot delete the last admin");
-      return;
+  const handleDelete = async (id: string) => {
+    try {
+      const del = await axios.delete(`https://faap.onrender.com/api/admin/delete/${id}`);
+      if (del.status === 200) {
+        toast.success(del.data?.message || "Admin deleted");
+        loadAdmins();
+      } else {
+        toast.error(del.data?.message || "Failed to delete admin");
+      }
+
+    } catch (error: any) {
+      toast.error(error)
     }
-    
-    if (adminToDelete?.id === currentAdmin?.id) {
-      toast.error("Cannot delete your own account");
-      return;
-    }
-    
-    const passwords = JSON.parse(localStorage.getItem("adminPasswords") || "{}");
-    delete passwords[adminToDelete.email];
-    
-    const updatedAdmins = admins.filter((a: Admin) => a.id !== id);
-    localStorage.setItem("admins", JSON.stringify(updatedAdmins));
-    localStorage.setItem("adminPasswords", JSON.stringify(passwords));
-    
-    loadAdmins();
-    toast.success("Admin deleted successfully");
   };
 
   return (
@@ -127,8 +127,8 @@ export default function Admins() {
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
-                  value={newAdmin.name}
-                  onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })}
+                  value={newAdmin.username}
+                  onChange={(e) => setNewAdmin({ ...newAdmin, username: e.target.value })}
                   required
                 />
               </div>
@@ -152,7 +152,7 @@ export default function Admins() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">Add Admin</Button>
+              <Button type="submit" className="w-full">{loading ? "loading...." : "Add Admin"}</Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -174,9 +174,12 @@ export default function Admins() {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {loadingadmins && <TableRow className="center flex justify-center align-bottom ">loading admins...</TableRow>}
                 {admins.map((admin) => (
                   <TableRow key={admin.id}>
-                    <TableCell className="font-medium">{admin.name}</TableCell>
+
+
+                    <TableCell className="font-medium">{admin?.username}</TableCell>
                     <TableCell>{admin.email}</TableCell>
                     <TableCell>{new Date(admin.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
@@ -184,8 +187,9 @@ export default function Admins() {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDelete(admin.id)}
-                        className="hover:bg-destructive/10 hover:text-destructive"
-                        disabled={admin.id === currentAdmin?.id || admins.length === 1}
+                        className="hover:bg-destructive/10 hover:text-destructive pointer"
+                        disabled={false}
+                      // disabled={admin.id === currentAdmin?.id || admins.length === 1}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
