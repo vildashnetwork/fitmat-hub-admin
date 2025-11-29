@@ -149,7 +149,7 @@ export default function ElectionForm({ election, candidates = [], onCreated, onU
             <p className="mt-1 text-sm text-gray-500">Set up your election details below. Fields marked with * are required.</p>
           </div>
 
-          <form onSuzbmit={handleSubmit} className="p-6 space-y-6 gap-1 flex-auto" noValidate>
+          <form onSubmit={handleSubmit} className="p-6 space-y-6 gap-1 flex-auto" noValidate>
             {/* Global ARIA Live Region for Toasts */}
             <div aria-live="polite" className="sr-only">
               {/* This is where toast messages would be announced by screen readers */}
@@ -295,7 +295,7 @@ export default function ElectionForm({ election, candidates = [], onCreated, onU
                                 {increase ? c.manifesto : c.manifesto.slice(0, 80)}
 
                                 {c.manifesto.length > 80 && (
-                                  <button
+                                  <span
                                     onClick={(e) => {
                                       e.preventDefault()
                                       setincrease(!increase)
@@ -303,7 +303,7 @@ export default function ElectionForm({ election, candidates = [], onCreated, onU
                                     className="ml-2 text-blue-600 hover:text-blue-800 font-medium transition-all"
                                   >
                                     {increase ? "....See less" : ".....See more"}
-                                  </button>
+                                  </span>
                                 )}
                               </div>
 
@@ -329,7 +329,7 @@ export default function ElectionForm({ election, candidates = [], onCreated, onU
                    hover:bg-blue-700 focus:outline-none focus:ring-2
                     focus:ring-blue-500 focus:ring-offset-2
                      disabled:opacity-50 disabled:cursor-not-allowe"
-                style={{ background: "#777", padding: "12px", cursor: "pointer" }}
+              // style={{ background: "#777", padding: "12px", cursor: "pointer" }}
               >
                 {isSubmitting && <ArrowPathIcon className="w-4 h-4 mr-2 animate-spin" />}
                 {isSubmitting ? "Saving..." : isEditing ? "Update Election" : "Create Election"}
