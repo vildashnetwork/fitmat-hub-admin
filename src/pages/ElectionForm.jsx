@@ -21,6 +21,7 @@ export default function ElectionForm({ election, candidates = [], onCreated, onU
     eligibility: "",
     selectedCandidates: [],
   });
+  const [increase, setincrease] = useState(false)
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -267,6 +268,7 @@ export default function ElectionForm({ election, candidates = [], onCreated, onU
                           key={c._id}
                           type="button"
                           onClick={() => toggleCandidate(c._id)}
+                          style={{ background: `${c.color}`, margin: "10px" }}
                           className={`relative flex items-center gap-3 p-3 rounded-md text-left ring-1 ring-inset transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isSelected
                             ? "bg-blue-50 ring-blue-400 shadow-sm"
                             : "bg-white ring-gray-200 hover:ring-blue-400 hover:shadow-sm"
@@ -288,7 +290,24 @@ export default function ElectionForm({ election, candidates = [], onCreated, onU
                           </div>
                           <div className="flex-1 pr-4">
                             <h4 className="text-sm font-semibold text-gray-900">{c.name}</h4>
-                            <p className="text-xs text-gray-500 line-clamp-2">{c.manifesto || "No manifesto provided."}</p>
+                            <p className="text-xs text-gray-500 line-clamp-2">
+                              <div className="mt-2 text-sm text-gray-700 leading-relaxed">
+                                {increase ? c.manifesto : c.manifesto.slice(0, 80)}
+
+                                {c.manifesto.length > 80 && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault()
+                                      setincrease(!increase)
+                                    }}
+                                    className="ml-2 text-blue-600 hover:text-blue-800 font-medium transition-all"
+                                  >
+                                    {increase ? "....See less" : ".....See more"}
+                                  </button>
+                                )}
+                              </div>
+
+                            </p>
                           </div>
                         </button>
                       );
@@ -304,7 +323,13 @@ export default function ElectionForm({ election, candidates = [], onCreated, onU
               <button
                 type="submit"
                 disabled={isSubmitting || isFormInvalid}
-                className="inline-flex items-center justify-center px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center
+                 justify-center px-6 py-2 bg-blue-600
+                  text-white text-sm font-medium rounded-md shadow-sm
+                   hover:bg-blue-700 focus:outline-none focus:ring-2
+                    focus:ring-blue-500 focus:ring-offset-2
+                     disabled:opacity-50 disabled:cursor-not-allowe"
+                style={{ background: "#777", padding: "12px", cursor: "pointer" }}
               >
                 {isSubmitting && <ArrowPathIcon className="w-4 h-4 mr-2 animate-spin" />}
                 {isSubmitting ? "Saving..." : isEditing ? "Update Election" : "Create Election"}
@@ -313,7 +338,14 @@ export default function ElectionForm({ election, candidates = [], onCreated, onU
                 type="button"
                 onClick={resetForm}
                 disabled={isSubmitting}
-                className="px-6 py-2 bg-white text-sm font-medium text-gray-700 rounded-md ring-1 ring-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50"
+                className="px-6 py-2 bg-white 
+                text-sm font-medium text-gray-700 
+                rounded-md ring-1 ring-gray-300 
+                shadow-sm hover:bg-gray-50 
+                focus:outline-none focus:ring-2
+                 focus:ring-gray-500
+                  focus:ring-offset-2 disabled:opacity-50"
+                style={{ marginLeft: "10px" }}
               >
                 Reset
               </button>

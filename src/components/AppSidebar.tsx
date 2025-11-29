@@ -23,6 +23,7 @@ const items = [
   { title: "Settings", url: "/settings", icon: Settings },
   { title: "Requests", url: "/requests", icon: Calendar },
   { title: "Approved", url: "/approved", icon: Shield },
+  { title: "elections", url: "/elections", icon: Shield },
 ];
 
 export function AppSidebar() {

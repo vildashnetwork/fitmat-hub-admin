@@ -11,6 +11,7 @@ export default function ElectionsPage() {
   const [loadingElections, setLoadingElections] = useState(true);
   const [selectedElection, setSelectedElection] = useState(null);
   const [toast, setToast] = useState(null);
+  const [increase, setincrease] = useState(false)
 
   useEffect(() => {
     fetchCandidates();
@@ -119,7 +120,7 @@ export default function ElectionsPage() {
 
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
               <div className="px-6 py-5 border-b border-gray-200">
-                <h3 className="text-base font-semibold text-gray-900">All Candidates</h3>
+                <h3 className="py-3 px-2 text-base font-semibold text-gray-900">All Candidates</h3>
               </div>
               <div className="p-6">
                 {loadingCandidates ? (
@@ -135,7 +136,21 @@ export default function ElectionsPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 truncate">{c.name}</p>
-                          <p className="text-xs text-gray-500 truncate">{c.manifesto || ""}</p>
+                          <p className="text-xs text-gray-500 truncate">
+                            {increase ? c.manifesto : c.manifesto.slice(0, 80)}
+                            {c.manifesto.length > 80 && (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  setincrease(!increase)
+                                }}
+                                className="ml-2 text-blue-600 hover:text-blue-800 font-medium transition-all"
+                              >
+                                {increase ? "....See less" : ".....See more"}
+                              </button>
+                            )}
+
+                          </p>
                         </div>
                         <p className="text-xs text-gray-400">{new Date(c.createdAt || Date.now()).toLocaleDateString()}</p>
                       </li>
@@ -150,8 +165,8 @@ export default function ElectionsPage() {
           <main className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
               <div className="px-6 py-5 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Existing Elections</h2>
-                <p className="mt-1 text-sm text-gray-500">Manage your elections. Select one to view details.</p>
+                <h2 className=" py-3 px-4 text-lg font-semibold text-gray-900">Existing Elections</h2>
+                <p className=" py-1 px-4  mt-1 text-sm text-gray-500">Manage your elections. Select one to view details.</p>
               </div>
               <div className="p-6">
                 {loadingElections ? (
